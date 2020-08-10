@@ -20,13 +20,30 @@
   "background":
 	{
     "scripts": ["eventPage.js"],
-    "persistent": false
-	},
+    "persistent": true
+  },
+
+  "content_scripts":[
+    {
+        "matches": ["<all_urls>"],
+        "js": [
+          "jquery-3.1.0.min.js",
+          "md5.min.js",
+          "md5.js",
+          "tjs.browser.js",
+          "content.js"
+        ]
+    }
+],
   
   "permissions": [
-    "storage",
-    "notifications",
-    "contextMenus",
-    "<all_urls>"
+    "contextMenus", 
+		"tabs", 
+		"notifications", 
+		"webRequest",
+		"webRequestBlocking",
+		"storage", 
+		"http://*/*",
+		"https://*/*"
   ]
 }
