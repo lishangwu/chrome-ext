@@ -13,7 +13,15 @@ $(function () {
     })
 
     $('#resetTotal').click(() => {
-        chrome.storage.sync.set({ 'total': 0 })
+        chrome.storage.sync.set({ 'total': 0 }, () => { 
+            let notifOptions = {
+                type: 'basic',
+                iconUrl: 'icon.png',
+                title: 'Total reset!',
+                message: "Total has been reset to 0!"
+            }
+            chrome.notifications.create(null,notifOptions)
+        })
     })
 
 })
