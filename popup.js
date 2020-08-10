@@ -4,10 +4,9 @@ $(function () {
     })
 
 
-    chrome.storage.sync.get('total', (budget) => { 
-        if (budget.total) {
-            $('#total').text(budget.total)
-        }
+    chrome.storage.sync.get(['total', 'limit'], (budget) => { 
+        $('#total').text(budget.total)
+        $('#limit').text(budget.limit)
     })
 
     $('#spendAmount').click(() => { 
