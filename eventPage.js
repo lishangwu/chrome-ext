@@ -1,6 +1,6 @@
 let contextMenuItem = {
-    id: 'spendMoney',
-    title: 'SpendMoney_title',
+    id: 'translate',
+    title: '查看翻译',
     contexts: ['selection']
 }
 
@@ -13,30 +13,46 @@ function isInt(value) {
 }
 
 chrome.contextMenus.onClicked.addListener((clickData) => {
-    if (clickData.menuItemId == 'spendMoney' && clickData.selectionText) {
-        if (isInt(clickData.selectionText)) {
-            chrome.storage.sync.get(['total', 'limit'], (budget) => {
-                let newTotal = 0
-                if (budget.total) {
-                    newTotal += budget.total
+    let query = clickData.selectionText.trim()
+    if (clickData.menuItemId == 'translate' && query) {
+        $.ajax({
+            url: 'http://localhost:3002/word/'+query,
+            type: 'get',
+            data: {
+                en: query,
+            },
+            success: function (data) {
+                let notifOptions = {
+                    type: 'basic',
+                    iconUrl: 'icon.png',
+                    title: `${query} 查看翻译`,
+                    message: JSON.stringify(data.detail?.google?.result)
                 }
-                newTotal += parseInt(clickData.selectionText)
-                chrome.storage.sync.set({ total: newTotal }, () => {
-                    if (newTotal >= budget.limit) {
-                        let notifOptions = {
-                            type: 'basic',
-                            iconUrl: 'icon.png',
-                            title: 'Limit reached!',
-                            message: "Uh oh! Looks like you've reached your limit!"
-                        }
-                        chrome.notifications.create(null, notifOptions)
-                    }
-                })
-            })
-        }
+                try {
+                    chrome.notifications.create(null,notifOptions)
+                } catch (error) {
+                    console.log(error);
+                }
+            },
+            error: function (err) {
+                let notifOptions = {
+                    type: 'basic',
+                    iconUrl: 'icon.png',
+                    title: `${query} 保存失败`,
+                    message: JSON.stringify(err)
+                }
+                try {
+                    chrome.notifications.create(null,notifOptions)
+                } catch (error) {
+                    console.log(error);
+                }
+            }
+        })
+
+        
     }
 })
-chrome.browserAction.setBadgeText({ 'text': 'sb' })
-chrome.storage.onChanged.addListener((changes, storageName) => {
-    chrome.browserAction.setBadgeText({ 'text': changes.total.newValue.toString() })
-})
+// chrome.browserAction.setBadgeText({ 'text': 'sb' })
+// chrome.storage.onChanged.addListener((changes, storageName) => {
+//     chrome.browserAction.setBadgeText({ 'text': changes.total.newValue.toString() })
+// })
